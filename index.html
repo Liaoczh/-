@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>药物分类</title>
+    <style>
+        body { display: flex; font-family: Arial, sans-serif; }
+        .column { padding: 10px; border: 1px solid #ccc; }
+        #left { width: 20%; }
+        #middle { width: 40%; }
+        #right { width: 40%; }
+        ul { list-style: none; padding: 0; }
+        li { cursor: pointer; padding: 5px; }
+    </style>
+</head>
+<body>
+    <div id="left" class="column">
+        <h3>父分类</h3>
+        <ul id="parentList"></ul>
+    </div>
+    <div id="middle" class="column">
+        <h3>子分类和药名</h3>
+        <input type="text" id="search" placeholder="搜索药名...">
+        <ul id="middleList"></ul>
+    </div>
+    <div id="right" class="column">
+        <h3>药物详情</h3>
+        <div id="details"></div>
+    </div>
+
+    <script>
+        // 将原来 data.json 的内容直接嵌入这里
+        const data = [
+            {
+                "name": "安神类",
+                "children": [
+                    {
+                        "name": "酸枣仁",
+                        "dosage": "10-15g",
+                        "usage": "失眠、多梦、心悸",
+                        "effects": "养心安神、敛汗生津",
+                        "caution": "脾虚便溏者慎用"
+                    },
+                    {
+                        "name": "柏子仁",
+                        "dosage": "5-10g",
+                        "usage": "心悸失眠、肠燥便秘",
+                        "effects": "养心安神、润肠通便",
+                        "caution": "痰多者慎用"
+                    }
+                ]
+            },
+            {
+                "name": "清热类",
+                "children": [
+                    {
+                        "name": "黄连",
+                        "dosage": "3-10g",
+                        "usage": "高热烦躁、湿热泻痢",
+                        "effects": "清热燥湿、泻火解毒",
+                        "caution": "脾胃虚寒者慎用"
+                    }
+                ]
+            }
+        ];
+
+        function renderParents() {
+            const parentList = document.getElementById('parentList');
+            parentList.innerHTML = '';
+            data.forEach(category => {
+                const li = document.createElement('li');
+                li.textContent = category.name;
+                li.onclick = () => renderMiddle(category.children);
+                parentList.appendChild(li);
+            });
+        }
+
+        function renderMiddle(children) {
+            const middleList = document.getElementById('middleList');
+            middleList.innerHTML = '';
+            children.forEach(sub => {
+                const subLi = document.createElement('li');
+                subLi.textContent = sub.name;
+                subLi.onclick = () => renderRight(sub);
+                middleList.appendChild(subLi);
+            });
+        }
+
+        function renderRight(sub) {
+            const details = document.getElementById('details');
+            details.innerHTML = `
+                <h4>${sub.name}</h4>
+                <p><strong>用量：</strong>${sub.dosage}</p>
+                <p><strong>主治：</strong>${sub.usage}</p>
+                <p><strong>功效：</strong>${sub.effects}</p>
+                <p><strong>注意：</strong>${sub.caution}</p>
+            `;
+        }
+
+        document.getElementById('search').addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
+            document.querySelectorAll('#middleList li').forEach(li => {
+                li.style.display = li.textContent.toLowerCase().includes(searchText) ? '' : 'none';
+            });
+        });
+
+        window.onload = renderParents;  // 页面加载时渲染父分类
+    </script>
+</body>
+</html>
